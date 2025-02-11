@@ -41,6 +41,20 @@
             Assert.AreEqual(false, result, "Login failed");
         }
 
+        [TestMethod]
+        public void TestAfHash1()
+        {
+            string salt1 = H5_Hashing.Program.GenerateSalt();
+            string salt2 = H5_Hashing.Program.GenerateSalt();
+
+
+            string hashedPassword1 = H5_Hashing.Program.HashPassword("fisk", salt1);
+            string hashedPassword2 = H5_Hashing.Program.HashPassword("fisk", salt2);
+
+            // Assert
+            Assert.AreNotEqual(hashedPassword1, hashedPassword2, "Hash changing incorrect");
+        }
+
 
     }
 }
