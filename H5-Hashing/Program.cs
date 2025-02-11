@@ -23,6 +23,16 @@ namespace H5_Hashing
                 case "3":
                     return;
                 case "4":
+                    var (username, password) = GetUserInput();
+                    if (TestLogin(username, password))
+                    {
+                        Console.WriteLine("Correct Username and Password match!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Incorrect Username and Password match!");
+
+                    }
                     return;
                 default:
                     Console.WriteLine("Invalid choice, try again.");
@@ -40,12 +50,18 @@ namespace H5_Hashing
             Console.WriteLine(" Choose an option    : ");
         }
 
-        static void AddUser()
+        static (string, string) GetUserInput()
         {
             Console.Write("Enter username: ");
             string username = Console.ReadLine();
             Console.Write("Enter password: ");
             string password = Console.ReadLine();
+            return (username, password);
+        }
+
+        static void AddUser()
+        {
+            var (username, password) = GetUserInput();
 
             string hashedPassword = HashPassword(password); //hash can take empty string
 
@@ -82,5 +98,35 @@ namespace H5_Hashing
                 return Convert.ToHexString(bytes);  // Returns a hex string
             }
         }
+
+        static bool TestLogin(string user, string pw)
+        {
+            if (!File.Exists(filePath))
+            {
+                Console.WriteLine("file with users not found.");
+                return false;
+            }
+
+            string[] users = File.ReadAllLines(filePath);
+
+            foreach (string line in users)
+            {
+                string[] parts = line.Split(':');
+                if (parts.Length == 2)
+                {
+                    string storedUsername = parts[0];
+                    string storedHashedPassword = parts[1];
+
+                    if (storedUsername == user)
+                    {
+                        string enteredHashedPassword = HashPassword(pw);
+                        return enteredHashedPassword == storedHashedPassword;
+                    }
+                }
+            }
+
+            return false;
+        }
+
     }
 }
