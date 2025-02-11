@@ -166,5 +166,14 @@ namespace H5_Hashing
             return false;
         }
 
+        public static string GenerateSalt(int length = 16)
+        {
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                byte[] salt = new byte[length];
+                rng.GetBytes(salt);
+                return Convert.ToBase64String(salt);
+            }
+        }
     }
 }
