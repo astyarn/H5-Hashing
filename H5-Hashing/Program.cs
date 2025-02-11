@@ -5,7 +5,7 @@ namespace H5_Hashing
 {
     public class Program
     {
-        static string filePath = "users.txt";
+        static string FilePath { get; set; } = "users.txt";
 
         static void Main(string[] args)
         {
@@ -21,6 +21,17 @@ namespace H5_Hashing
                     ShowUsers();
                     break;
                 case "3":
+                    Console.WriteLine("Which User do you want to Delete?");
+                    var (usernameDel, passwordDel) = GetUserInput();
+                    if (TestLogin(usernameDel, passwordDel))
+                    {
+                        Console.WriteLine("Correct Username and Password match!");
+                        DeleteUser(usernameDel);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Incorrect Username and Password match!");
+                    }
                     return;
                 case "4":
                     var (username, password) = GetUserInput();
@@ -31,7 +42,6 @@ namespace H5_Hashing
                     else
                     {
                         Console.WriteLine("Incorrect Username and Password match!");
-
                     }
                     return;
                 default:
@@ -67,15 +77,43 @@ namespace H5_Hashing
 
             string entry = $"{username}:{hashedPassword}";    
 
-            File.AppendAllText(filePath, entry + Environment.NewLine);
+            File.AppendAllText(FilePath, entry + Environment.NewLine);
             Console.WriteLine("User added successfully.\n");
+        }
+
+        public static void DeleteUser(string username, string filePath = "users.txt")
+        {
+            // Check if the file exists
+            if (!File.Exists(filePath))
+            {
+                Console.WriteLine("File does not exist.");
+                return;
+            }
+
+            var lines = File.ReadAllLines(filePath).ToList();
+
+            var lineToRemove = lines.FirstOrDefault(line => line.Split(':')[0] == username);
+
+            if (lineToRemove != null)
+            {
+                // Remove the line with the matching username
+                lines.Remove(lineToRemove);
+
+                File.WriteAllLines(filePath, lines);
+
+                Console.WriteLine($"User {username} has been deleted.");
+            }
+            else
+            {
+                Console.WriteLine($"User {username} not found.");
+            }
         }
 
         static void ShowUsers()
         {
-            if (File.Exists(filePath))
+            if (File.Exists(FilePath))
             {
-                string[] users = File.ReadAllLines(filePath);
+                string[] users = File.ReadAllLines(FilePath);
                 Console.WriteLine("\nStored Users:");
                 foreach (var user in users)
                 {
@@ -99,7 +137,7 @@ namespace H5_Hashing
             }
         }
 
-        public static bool TestLogin(string user, string pw, string filePath = "user.txt")
+        public static bool TestLogin(string user, string pw, string filePath = "users.txt")
         {
             if (!File.Exists(filePath))
             {
