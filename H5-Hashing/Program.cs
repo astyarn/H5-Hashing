@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 
 namespace H5_Hashing
 {
-    internal class Program
+    public class Program
     {
         static string filePath = "users.txt";
 
@@ -89,7 +89,7 @@ namespace H5_Hashing
             }
         }
 
-        static string HashPassword(string password)
+        public static string HashPassword(string password)
         {
             //Able to handle empty string
             using (SHA256 sha256 = SHA256.Create())
@@ -99,7 +99,7 @@ namespace H5_Hashing
             }
         }
 
-        static bool TestLogin(string user, string pw)
+        public static bool TestLogin(string user, string pw, string filePath = "user.txt")
         {
             if (!File.Exists(filePath))
             {
