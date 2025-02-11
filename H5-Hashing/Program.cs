@@ -73,9 +73,10 @@ namespace H5_Hashing
         {
             var (username, password) = GetUserInput();
 
-            string hashedPassword = HashPassword(password); //hash can take empty string
+            string salt = GenerateSalt();
+            string hashedPassword = HashPassword(password, salt); 
 
-            string entry = $"{username}:{hashedPassword}";    
+            string entry = $"{username}:{salt}:{hashedPassword}";    //Store salt alongside the hashed password
 
             File.AppendAllText(FilePath, entry + Environment.NewLine);
             Console.WriteLine("User added successfully.\n");
@@ -127,13 +128,13 @@ namespace H5_Hashing
             }
         }
 
-        public static string HashPassword(string password)
+        public static string HashPassword(string password, string salt)
         {
-            //Able to handle empty string
             using (SHA256 sha256 = SHA256.Create())
             {
-                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                return Convert.ToHexString(bytes);  // Returns a hex string
+                byte[] saltedPassword = Encoding.UTF8.GetBytes(password + salt); // Combine password and salt
+                byte[] hashBytes = sha256.ComputeHash(saltedPassword);
+                return Convert.ToHexString(hashBytes);  // Returns a hex string
             }
         }
 
@@ -150,20 +151,21 @@ namespace H5_Hashing
             foreach (string line in users)
             {
                 string[] parts = line.Split(':');
-                if (parts.Length == 2)
+                if (parts.Length == 3) // Format: username:salt:hashedPassword
                 {
                     string storedUsername = parts[0];
-                    string storedHashedPassword = parts[1];
+                    string storedSalt = parts[1];  //Salt part
+                    string storedHashedPassword = parts[2];
 
                     if (storedUsername == user)
                     {
-                        string enteredHashedPassword = HashPassword(pw);
+                        string enteredHashedPassword = HashPassword(pw, storedSalt); 
                         return enteredHashedPassword == storedHashedPassword;
                     }
                 }
             }
 
-            return false;
+            return false; // Username not found or password does not match
         }
 
         public static string GenerateSalt(int length = 16)

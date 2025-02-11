@@ -10,7 +10,8 @@
         {
             // Arrange: Create a temporary user file
             string tempFilePath = Path.GetTempFileName();
-            File.WriteAllText(tempFilePath, $"HashTest2:{H5_Hashing.Program.HashPassword("Test1234")}");
+            string salt = H5_Hashing.Program.GenerateSalt();
+            File.WriteAllText(tempFilePath, $"HashTest2:{salt}:{H5_Hashing.Program.HashPassword("Test1234", salt)}");
 
             // Act
             bool result = H5_Hashing.Program.TestLogin("HashTest2", "Test1234", tempFilePath);
@@ -27,7 +28,8 @@
         {
             // Arrange: Create a temporary user file
             string tempFilePath = Path.GetTempFileName();
-            File.WriteAllText(tempFilePath, $"HashTest2:{H5_Hashing.Program.HashPassword("Test1234")}");
+            string salt = H5_Hashing.Program.GenerateSalt();
+            File.WriteAllText(tempFilePath, $"HashTest2:{salt}:{H5_Hashing.Program.HashPassword("Test1234", salt)}");
 
             // Act
             bool result = H5_Hashing.Program.TestLogin("HashTest2", "TestIkke", tempFilePath);
